@@ -37,7 +37,7 @@ export interface MutantDetectionConfig {
     minSequences: number;
 }
 
-export const DEFAULT_MUTANT_CONFI: MutantDetectionConfig = {
+export const DEFAULT_MUTANT_CONFIG: MutantDetectionConfig = {
     sequenceLength: 4,
     minSequences: 2
 };
