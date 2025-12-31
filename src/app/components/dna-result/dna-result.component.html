@@ -1,0 +1,122 @@
+<div class="bg-white rounded-xl p-8 shadow-lg max-w-3xl mx-auto">
+    @if (result().isValid) {
+        <!-- Resultado Principal -->
+        <div class="text-center mb-8">
+            @if (result().isMutant) {
+                <div class="mb-4">
+                    
+                </div>
+                <h2 class="text-4xl font-bold text-red-600 mb-2">¡ES MUTANTE!</h2>
+                <p class="text-gray-600 text-lg">
+                    Se detectaron {{ result().sequences.length }} secuencias de ADN mutante
+                </p>
+            } @else {
+                <div class="mb-4">
+                    <div class="inline-flex items-center justify-center w-24 h-24 bg-linear-to-br from-green-500 to-green-600 rounded-full shadow-lg">
+                        <span class="text-5xl">👤</span>
+                    </div>
+                </div>
+                <h2 class="text-4xl font-bold text-green-600 mb-2">Es Humano</h2>
+                <p class="text-gray-600 text-lg">
+                    @if (result().sequences.length === 0) {
+                        No se encontraron secuencias mutantes
+                    } @else {
+                        Se encontró {{ result().sequences.length }} secuencia(s), pero se requieren al menos 2
+                    }
+                </p>
+            }
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-blue-50 rounded-lg p-4 text-center border-2 border-blue-200">
+                <div class="text-3xl font-bold text-blue-600">{{ result().matrixSize }}x{{ result().matrixSize }}</div>
+                <div class="text-sm text-blue-700 font-medium mt-1">Tamaño de Matriz</div>
+            </div>
+            <div class="bg-purple-50 rounded-lg p-4 text-center border-2 border-purple-200">
+                <div class="text-3xl font-bold text-purple-600">{{ result().sequences.length }}</div>
+                <div class="text-sm text-purple-700 font-medium mt-1">Secuencias Encontradas</div>
+            </div>
+            <div class="bg-green-50 rounded-lg p-4 text-center border-2 border-green-200">
+                <div class="text-3xl font-bold text-green-600">{{ result().matrixSize * result().matrixSize }}</div>
+                <div class="text-sm text-green-700 font-medium mt-1">Bases Analizadas</div>
+            </div>
+        </div>
+
+        <!-- Detalles de Secuencias -->
+        @if (result().sequences.length > 0) {
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Detalles de Secuencias</h3>
+                
+                <!-- Resumen por dirección -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    @for (entry of getSequencesByDirection() | keyvalue; track entry.key) {
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div [class]="'w-10 h-10 rounded-full flex items-center justify-center text-white text-xl ' + getDirectionColor(entry.key)">
+                                {{ getDirectionIcon(entry.key) }}
+                            </div>
+                            <div>
+                                <div class="font-bold text-gray-800">{{ entry.value }}</div>
+                                <div class="text-xs text-gray-600">{{ getDirectionName(entry.key) }}</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Lista detallada de secuencias -->
+                <div class="space-y-3">
+                    @for (sequence of result().sequences; track $index) {
+                        <div class="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                            <div [class]="'w-12 h-12 rounded-full flex items-center justify-center text-white text-2xl font-bold ' + getDirectionColor(sequence.direction)">
+                                {{ getDirectionIcon(sequence.direction) }}
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-bold text-gray-800">Secuencia {{ $index + 1 }}:</span>
+                                    <span class="px-3 py-1 bg-white rounded-full font-mono text-lg font-bold border-2 border-gray-300">
+                                        {{ sequence.base.repeat(sequence.length) }}
+                                    </span>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <span class="font-medium">{{ getDirectionName(sequence.direction) }}</span> •
+                                    Desde [{{ sequence.startPosition.row }}, {{ sequence.startPosition.col }}] 
+                                    hasta [{{ sequence.endPosition.row }}, {{ sequence.endPosition.col }}]
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <!-- Botón para nuevo análisis -->
+        <div class="text-center">
+            <button
+                (click)="handleNewAnalysis()"
+                class="group px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105"
+            >
+                <span class="flex items-center gap-2">
+                    <svg class="w-5 h-5 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                    </svg>
+                    Analizar Nuevo ADN
+                </span>
+            </button>
+        </div>
+    } @else {
+        <!-- Error de validación -->
+        <div class="text-center py-12">
+            <div class="mb-4">
+                <span class="text-6xl">⚠️</span>
+            </div>
+            <h2 class="text-3xl font-bold text-red-600 mb-4">Error de Validación</h2>
+            <p class="text-gray-600 text-lg mb-6">{{ result().errorMessage }}</p>
+            <button
+                (click)="handleNewAnalysis()"
+                class="px-8 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-colors"
+            >
+                Intentar de Nuevo
+            </button>
+        </div>
+    }
+</div>
