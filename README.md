@@ -1,59 +1,56 @@
-# IsMutant
+# 🧬 Detector de Mutantes
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
+Aplicación Angular que detecta si un humano es mutante basándose en su secuencia de ADN.
 
-## Development server
+## ¿Qué hace?
 
-To start a local development server, run:
+Analiza secuencias de ADN (matrices de NxN) y detecta si hay **más de una secuencia** de 4 letras iguales (A, T, C, G) en cualquier dirección: horizontal, vertical o diagonal.
 
-```bash
-ng serve
+**Ejemplo de Mutante:**
+
+```
+A T G C G A
+C A G T G C
+T T A T G T
+A G A A G G
+C C C C T A
+T C A C T G
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Cómo usar
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Desarrollo local
 
 ```bash
-ng generate component component-name
+npm install
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Abre `http://localhost:4200`
+
+### Con Docker
+
+**Producción (puerto 80):**
 
 ```bash
-ng generate --help
+docker-compose up -d is-mutant-prod
 ```
 
-## Building
-
-To build the project run:
+**Desarrollo (puerto 4200):**
 
 ```bash
-ng build
+docker-compose --profile dev up -d is-mutant-dev
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Tecnologías
 
-## Running unit tests
+- Angular 21 con Signals
+- Tailwind CSS
+- TypeScript
+- Docker + Nginx
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Tests
 
 ```bash
-ng test
+npm test
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
