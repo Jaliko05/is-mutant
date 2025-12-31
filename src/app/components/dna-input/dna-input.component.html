@@ -1,0 +1,118 @@
+<div class="bg-white rounded-xl p-8 shadow-lg max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Ingrese la Secuencia de ADN</h2>
+        <p class="text-gray-600 text-sm">
+            Ingrese cada fila de la matriz de ADN. Solo se permiten las letras A, T, C, G.
+        </p>
+    </div>
+
+    <!-- Selector de tamaño de matriz -->
+    <div class="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+        <label for="matrixSize" class="font-semibold text-gray-700">
+            Tamaño de la matriz:
+        </label>
+        <select
+            id="matrixSize"
+            [value]="matrixSize()"
+            (change)="updateMatrixSize(+$any($event.target).value)"
+            class="px-4 py-2 border-2 border-gray-200 rounded-lg font-medium cursor-pointer transition-colors hover:border-blue-400 focus:outline-none focus:border-blue-500"
+        >
+            @for (size of availableSizes; track size) {
+                <option [value]="size">{{ size }}x{{ size }}</option>
+            }
+        </select>
+    </div>
+
+    <!-- Entrada de secuencias -->
+    <div class="mb-6">
+        <div class="flex gap-2 mb-2">
+            <input
+                type="text"
+                [value]="currentInput()"
+                (input)="currentInput.set($any($event.target).value.toUpperCase())"
+                (keyup.enter)="addSequence()"
+                [placeholder]="'Ej: ATGCGA (' + matrixSize() + ' caracteres)'"
+                [maxLength]="matrixSize()"
+                [disabled]="isMatrixComplete()"
+                class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-lg font-mono text-lg tracking-wider transition-colors focus:outline-none focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            />
+            <button
+                (click)="addSequence()"
+                [disabled]="!currentInput() || isMatrixComplete()"
+                class="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg transition-colors hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                Agregar Fila
+            </button>
+        </div>
+
+        @if (hasError()) {
+            <div class="p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded mb-2">
+                {{ errorMessage() }}
+            </div>
+        }
+
+        @if (!isMatrixComplete()) {
+            <div class="p-3 bg-blue-50 border-l-4 border-blue-500 text-blue-700 rounded">
+                Faltan {{ getRemainingSequences() }} fila(s) para completar la matriz
+            </div>
+        }
+    </div>
+
+    <!-- Lista de secuencias ingresadas -->
+    <div class="mb-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">
+            Secuencias Ingresadas ({{ dnaSequences().length }}/{{ matrixSize() }})
+        </h3>
+
+        @if (dnaSequences().length === 0) {
+            <p class="text-center text-gray-400 py-8 italic">
+                No hay secuencias ingresadas aún
+            </p>
+        } @else {
+            <div class="flex flex-col gap-2">
+                @for (sequence of dnaSequences(); track $index) {
+                    <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg transition-colors hover:bg-gray-100">
+                        <span class="flex items-center justify-center w-8 h-8 bg-blue-500 text-white rounded-full font-semibold text-sm">
+                            {{ $index + 1 }}
+                        </span>
+                        <span class="flex-1 font-mono text-lg tracking-widest text-gray-800 font-semibold">
+                            {{ sequence }}
+                        </span>
+                        <button
+                            (click)="removeSequence($index)"
+                            class="px-3 py-1 bg-red-500 text-white rounded transition-colors hover:bg-red-600"
+                            title="Eliminar"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Acciones -->
+    <div class="flex gap-4 justify-center flex-wrap">
+        <button
+            (click)="loadExample()"
+            class="px-6 py-3 bg-gray-500 text-white font-semibold rounded-lg transition-colors hover:bg-gray-600"
+        >
+            Cargar Ejemplo
+        </button>
+        <button
+            (click)="clearAll()"
+            [disabled]="dnaSequences().length === 0"
+            class="px-6 py-3 bg-gray-500 text-white font-semibold rounded-lg transition-colors hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            Limpiar Todo
+        </button>
+        <button
+            (click)="submitDna()"
+            [disabled]="!isMatrixComplete()"
+            class="px-6 py-3 bg-green-500 text-white font-semibold rounded-lg transition-colors hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+            Analizar ADN
+        </button>
+    </div>
+</div>
